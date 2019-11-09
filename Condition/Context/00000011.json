@@ -1,0 +1,49 @@
+{
+  "?xml": {
+    "@version": "1.0",
+    "@encoding": "UTF-8"
+  },
+  "con:Context": {
+    "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    "@xmlns:con": "http://www.example.org/HNS/Condition/Context",
+    "@xsi:schemaLocation": "http://www.example.org/HNS/Condition/Context ../../../Schema/Condition/ContextSchema.xsd",
+    "@uri": "http://localhost:8000/Condition/Context/00000001",
+    "con:ServiceName": "温度測定サービス",
+    "con:Summary": "温度センサを持った機器によってユーザ設定値より温度が低くなったときに真とするサービス",
+    "con:PrimitiveConditionEquationList": {
+      "con:PrimitiveConditionEquation": "1∨2∨3∨4"
+    },
+    "con:PrimitiveConditionList": {
+      "con:PrimitiveCondition": [
+        {
+          "@id": "1",
+          "con:DeviceName": {
+            "@uri": "http://localhost:8000/Condition/PrimitiveCondition/TemperatureSensor/con:PrimitiveConditionTemperatureMeasurementValue/User/lower",
+            "#text": "\n   TemperatureSensor"
+          }
+        },
+        {
+          "@id": "2",
+          "con:DeviceName": {
+            "@uri": "http://localhost:8000/Condition/PrimitiveCondition/DomesticAirConditioner/RoomTemperatureMeasurementValue/User/lower",
+            "#text": "DomesticAirConditioner\n "
+          }
+        },
+        {
+          "@id": "3",
+          "con:DeviceName": {
+            "@uri": "http://localhost:8000/Condition/PrimitiveCondition/ElectricHeater/RoomTemperatureMeasurementValue/User/lower",
+            "#text": "ElectricHeater\n  "
+          }
+        },
+        {
+          "@id": "4",
+          "con:DeviceName": {
+            "@uri": "http://localhost:8000/Condition/PrimitiveCondition/FanHeater/TemperatureMeasurementValue/User/lower",
+            "#text": "FanHeater"
+          }
+        }
+      ]
+    }
+  }
+}

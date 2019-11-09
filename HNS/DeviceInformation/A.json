@@ -1,0 +1,81 @@
+{
+  "?xml": {
+    "@version": "1.0",
+    "@encoding": "UTF-8"
+  },
+  "dev:DeviceInformation": {
+    "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    "@xmlns:dev": "http://www.example.org/HNS/DeviceInformation",
+    "@xsi:schemaLocation": "http://www.example.org/HNS/DeviceInformation ../../Schema/DeviceInformationSchema.xsd",
+    "dev:CreatedDate": "2001-12-31T12:00:00",
+    "dev:UpdateDate": "2001-12-31T12:00:00",
+    "dev:User": "A",
+    "dev:DeviceList": {
+      "dev:Device": [
+        {
+          "dev:DeviceName": "DomesticAirConditioner",
+          "dev:SerialNumber": "Aircon A",
+          "dev:InstalledDate": "2001-12-31T12:00:00",
+          "dev:Location": "Living",
+          "dev:FunctionList": {
+            "dev:Function": [
+              {
+                "dev:FunctionName": "OperatingStatus",
+                "dev:AccessRule": "Get/Set",
+                "dev:Setting": {
+                  "@type": "string",
+                  "dev:ValueList": {
+                    "dev:Value": [
+                      "ON",
+                      "OFF"
+                    ]
+                  }
+                }
+              },
+              {
+                "dev:FunctionName": "OperatingMode",
+                "dev:AccessRule": "Get/Set",
+                "dev:Setting": {
+                  "@type": "string",
+                  "dev:ValueList": {
+                    "dev:Value": [
+                      "AUTO",
+                      "COOLING",
+                      "HEATING",
+                      "DEHUMIDIFICATION",
+                      "BLAST"
+                    ]
+                  }
+                }
+              },
+              {
+                "dev:FunctionName": "TemperatureSettingValue",
+                "dev:AccessRule": "Get/Set",
+                "dev:Setting": {
+                  "@type": "numeric",
+                  "dev:Range": {
+                    "@scale": "1",
+                    "dev:UpperLimit": "15",
+                    "dev:LowerLomit": "30"
+                  }
+                }
+              },
+              {
+                "dev:FunctionName": "RoomTemperatureMeasurementValue",
+                "dev:AccessRule": "Get",
+                "dev:Setting": {
+                  "@type": "numeric",
+                  "dev:Range": {
+                    "@scale": "1",
+                    "dev:UpperLimit": "0",
+                    "dev:LowerLomit": "50"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

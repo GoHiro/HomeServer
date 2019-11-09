@@ -1,0 +1,41 @@
+{
+  "?xml": {
+    "@version": "1.0",
+    "@encoding": "UTF-8"
+  },
+  "dev:DeviceInformation": {
+    "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    "@xmlns:dev": "http://www.example.org/HNS/DeviceInformation",
+    "@xsi:schemaLocation": "http://www.example.org/HNS/DeviceInformation ../../Schema/DeviceInformationSchema.xsd",
+    "dev:CreatedDate": "2019-10-23T17:48:00",
+    "dev:UpdateDate": "2019-10-23T17:48:00",
+    "dev:User": "C",
+    "dev:DeviceList": {
+      "dev:Device": [
+        {
+          "dev:DeviceName": "DetectionSensor",
+          "dev:SerialNumber": "IRSensor C",
+          "dev:InstalledDate": "2019-10-23T17:48:00",
+          "dev:Location": "502",
+          "dev:FunctionList": {
+            "dev:Function": [
+              {
+                "dev:FunctionName": "DetectionStatus",
+                "dev:AccessRule": "Get",
+                "dev:Setting": {
+                  "@type": "string",
+                  "dev:ValueList": {
+                    "dev:Value": [
+                      "TRUE",
+                      "FALSE"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+       ]
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "?xml": {
+    "@version": "1.0",
+    "@encoding": "UTF-8"
+  },
+  "pc:PrimitiveCondition": {
+    "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    "@xmlns:pc": "http://www.example.org/HNS/Condition/PrimitiveCondition",
+    "@xsi:schemaLocation": "http://www.example.org/HNS/Condition/PrimitiveCondition ../../../../../../Schema/Condition/PrimitiveConditionSchema.xsd",
+    "@uri": "http://localhost:8000/Condition/PrimitiveCondition/IlluminanceSensor/IlluminanceMeasurementValue/User/upper",
+    "pc:ServiceName": "照度センサによる明るさ検知サービス",
+    "pc:Summary": "照度センサによる照度計測値がユーザ設定以上のとき真となるサービス",
+    "pc:Device": {
+      "pc:DeviceName": "IlluminanceSensor"
+    },
+    "pc:Function": {
+      "pc:FunctionName": "IlluminanceMeasurementValue"
+    },
+    "pc:Value": {
+      "@type": "upper",
+      "#text": "user_define"
+    }
+  }
+}

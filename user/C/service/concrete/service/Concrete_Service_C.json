@@ -1,0 +1,116 @@
+{
+  "?xml": {
+    "@version": "1.0",
+    "@encoding": "UTF-8",
+    "@standalone": "yes"
+  },
+  "ConcreteService": {
+    "@uri": "/user/C/service/concrete/service/Concrete_Service_C",
+    "@xmlns:ns2": "http://www.example.org/HNS/Service/ConcreteService/ConcreteCondition ",
+    "@xmlns": "http://www.example.org/HNS//Service/ConcreteService/ConcreteService ",
+    "@xmlns:ns4": "http://www.example.org/HNS/Service/ConcreteService/ConcreteAfterCondition ",
+    "@xmlns:ns3": "http://www.example.org/HNS/Service/ConcreteService/ConcreteOperation",
+    "CreatedDate": "2019-10-23T16:21:27.237+09:00",
+    "Summary": "赤外線センサが人に反応したときに実行するサービス",
+    "AbstractServiceReference": {
+      "@uri": "http://localhost:8080/service/abstractservice/00000001"
+    },
+    "User": "C",
+    "ConditionOperationSetList": {
+      "ConditionOperationSet": {
+        "ns2:Condition": {
+          "ns2:ConditionEquationList": {
+            "ns2:ConditionEquation": "Caa"
+          },
+          "ns2:ContextGroupList": {
+            "ns2:ContextGroup": {
+              "@id": "Caa",
+              "ns2:ContextEquationList": {
+                "ns2:ContextEquation": "Caa"
+              },
+              "ns2:ContextList": {
+                "ns2:Context": {
+                  "@id": "Caa",
+                  "@uri": "http://localhost:8000/Condition/Context/00000002",
+                  "ns2:DeviceList": {
+                    "ns2:Device": {
+                      "@id": "iLN",
+                      "ns2:SerialNumber": "IRSensor C",
+                      "ns2:Function": {
+                        "ns2:FunctionName": "DetectionStatus"
+                      },
+                      "ns2:Value": {
+                        "@type": "equal",
+                        "#text": "TRUE"
+                      }
+                    }
+                  },
+                  "ns2:DeviceConditionEquationList": null
+                }
+              }
+            }
+          }
+        },
+        "ns3:Operation": {
+          "ns3:AbstractOperationGroupList": {
+            "ns3:AbstractOperationGroup": {
+              "ns3:AbstractOperationList": {
+                "ns3:AbstractOperation": {
+                  "@uri": "http://localhost:8000/Operation/AbstractOperation/00000001",
+                  "ns3:DeviceList": {
+                    "ns3:Device": {
+                      "@seq": "1",
+                      "ns3:SerialNumber": "Aircon A",
+                      "ns3:FunctionList": {
+                        "ns3:Function": [
+                          {
+                            "@seq": "1",
+                            "ns3:FunctionName": "OperatingStatus",
+                            "ns3:Value": "ON"
+                          },
+                          {
+                            "@seq": "2",
+                            "ns3:FunctionName": "OperatingMode",
+                            "ns3:Value": "HEATING"
+                          },
+                          {
+                            "@seq": "3",
+                            "ns3:FunctionName": "TemperatureSettingValue",
+                            "ns3:Value": "20"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "ns4:AfterCondition": {
+          "@decition_time": "600",
+          "ns4:ContextList": {
+            "ns4:Context": {
+              "@id": "1",
+              "@uri": "http://localhost:8000/Condition/Context/00000001",
+              "ns4:DeviceConditionEquationList": null,
+              "ns4:DeviceList": {
+                "ns4:Device": {
+                  "@id": "ot0",
+                  "ns4:SerialNumber": "Aircon A",
+                  "ns4:Function": {
+                    "ns4:FunctionName": "RoomTemperatureMeasurementValue"
+                  },
+                  "ns4:Value": {
+                    "@type": "lower",
+                    "#text": "18"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

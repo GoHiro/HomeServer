@@ -1,0 +1,24 @@
+{
+  "?xml": {
+    "@version": "1.0",
+    "@encoding": "UTF-8"
+  },
+  "pc:PrimitiveCondition": {
+    "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    "@xmlns:pc": "http://www.example.org/HNS/Condition/PrimitiveCondition",
+    "@xsi:schemaLocation": "http://www.example.org/HNS/Condition/PrimitiveCondition ../../../../../../Schema/Condition/ PrimitiveConditionSchema.xsd",
+    "@uri": "http://localhost:8000/Condition/PrimitiveCondition/DomesticAirConditioner/RoomTemperatureMeasurementValue/ User/lower",
+    "pc:ServiceName": "エアコンによる室内温度測定サービス",
+    "pc:Summary": "エアコンによる温度センサがユーザ設定値を下回ったとき真となるサービス",
+    "pc:Device": {
+      "pc:DeviceName": "DomesticAirConditioner"
+    },
+    "pc:Function": {
+      "pc:FunctionName": "RoomTemperatureMeasurementValue"
+    },
+    "pc:Value": {
+      "@type": "lower",
+      "#text": "user_define"
+    }
+  }
+}

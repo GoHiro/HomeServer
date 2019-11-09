@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ConcreteService uri="/user/A/service/concrete/service/QbNbGM" xmlns:ns2="http://www.example.org/HNS/Service/ConcreteService/ConcreteCondition " xmlns="http://www.example.org/HNS//Service/ConcreteService/ConcreteService " xmlns:ns4="http://www.example.org/HNS/Service/ConcreteService/ConcreteAfterCondition " xmlns:ns3="http://www.example.org/HNS/Service/ConcreteService/ConcreteOperation">
+  <CreatedDate>2014-01-27T15:05:27.237+09:00</CreatedDate>
+  <Summary>ユーザが自由に記述できるスペース</Summary>
+  <AbstractServiceReference uri="http://localhost:8080/service/abstractservice/00000001" />
+  <User>A</User>
+  <ConditionOperationSetList>
+    <ConditionOperationSet>
+      <ns2:Condition>
+        <ns2:ConditionEquationList>
+          <ns2:ConditionEquation>Asr</ns2:ConditionEquation>
+        </ns2:ConditionEquationList>
+        <ns2:ContextGroupList>
+          <ns2:ContextGroup id="Asr">
+            <ns2:ContextEquationList>
+              <ns2:ContextEquation>Asr</ns2:ContextEquation>
+            </ns2:ContextEquationList>
+            <ns2:ContextList>
+              <ns2:Context id="Asr" uri="http://localhost:8000/Condition/Context/00000001">
+                <ns2:DeviceList>
+                  <ns2:Device id="iVK">
+                    <ns2:SerialNumber>Aircon A</ns2:SerialNumber>
+                    <ns2:Function>
+                      <ns2:FunctionName>RoomTemperatureMeasurementValue</ns2:FunctionName>
+                    </ns2:Function>
+                    <ns2:Value type="lower">15</ns2:Value>
+                  </ns2:Device>
+                </ns2:DeviceList>
+                <ns2:DeviceConditionEquationList />
+              </ns2:Context>
+            </ns2:ContextList>
+          </ns2:ContextGroup>
+        </ns2:ContextGroupList>
+      </ns2:Condition>
+      <ns3:Operation>
+        <ns3:AbstractOperationGroupList>
+          <ns3:AbstractOperationGroup>
+            <ns3:AbstractOperationList>
+              <ns3:AbstractOperation uri="http://localhost:8000/Operation/AbstractOperation/00000001">
+                <ns3:DeviceList>
+                  <ns3:Device seq="1">
+                    <ns3:SerialNumber>Aircon A</ns3:SerialNumber>
+                    <ns3:FunctionList>
+                      <ns3:Function seq="1">
+                        <ns3:FunctionName>OperatingStatus</ns3:FunctionName>
+                        <ns3:Value>ON</ns3:Value>
+                      </ns3:Function>
+                      <ns3:Function seq="2">
+                        <ns3:FunctionName>OperatingMode</ns3:FunctionName>
+                        <ns3:Value>HEATING</ns3:Value>
+                      </ns3:Function>
+                      <ns3:Function seq="3">
+                        <ns3:FunctionName>TemperatureSettingValue</ns3:FunctionName>
+                        <ns3:Value>20</ns3:Value>
+                      </ns3:Function>
+                    </ns3:FunctionList>
+                  </ns3:Device>
+                </ns3:DeviceList>
+              </ns3:AbstractOperation>
+            </ns3:AbstractOperationList>
+          </ns3:AbstractOperationGroup>
+        </ns3:AbstractOperationGroupList>
+      </ns3:Operation>
+      <ns4:AfterCondition decition_time="600">
+        <ns4:ContextList>
+          <ns4:Context id="1" uri="http://localhost:8000/Condition/Context/00000001">
+            <ns4:DeviceConditionEquationList />
+            <ns4:DeviceList>
+              <ns4:Device id="ot0">
+                <ns4:SerialNumber>Aircon A</ns4:SerialNumber>
+                <ns4:Function>
+                  <ns4:FunctionName>RoomTemperatureMeasurementValue</ns4:FunctionName>
+                </ns4:Function>
+                <ns4:Value type="lower">18</ns4:Value>
+              </ns4:Device>
+            </ns4:DeviceList>
+          </ns4:Context>
+        </ns4:ContextList>
+      </ns4:AfterCondition>
+    </ConditionOperationSet>
+  </ConditionOperationSetList>
+</ConcreteService>

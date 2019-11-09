@@ -1,34 +1,16 @@
 from aiohttp import web
 import asyncio
 import json
+import logical_expression
+
+import csv
 import serial
 from struct import *
 from binascii import *
-import ast
-
-import logical_expression as logex
-import match_context
+import time
+import random
 
 
-async def replace_reserved_strings(res_str):
-    reserved_to_unreserved = {'{': 'above_curly', ':': 'middle_colon',
-                              '}': 'below_curly', "'": 'top_quote', ',': 'under_comma',
-                              '@': 'attribute_at', '#': 'text_sharp', ' ': 'margin_space'}
-    for reserved, unreserved in reserved_to_unreserved.items():
-        res_str = res_str.replace(f'{reserved}', f'{unreserved}')
-
-    return res_str
-
-async def replace_previous_string(res_str):
-    # original string replaces to usable string on arrangement of http
-    unreserved_to_previous_string = {'above_curly': '{', 'middle_colon': ':',
-                                     'below_curly': '}', 'top_quote': "'", 'under_comma': ',',
-                                     'attribute_at': '@', 'text_sharp': '#', 'margin_space': ' '}
-
-    for unreserved, previous in unreserved_to_previous_string.items():
-        res_str = res_str.replace(f'{unreserved}', f'{previous}')
-
-    return res_str
 
 class HomeServer:
     # サーバとセンサ、家電で同期している変数を保持する
@@ -44,8 +26,6 @@ class HomeServer:
         self.service = []
         self.l_value = []
 
-        self.enviroment_field = {}
-
         self.kaden = 0
         self.state = 0
         self.channel = 0
@@ -60,12 +40,11 @@ class HomeServer:
         # self.f = open('data.csv', 'r')
         # self.reader = csv.reader(self.f)
         # for row in self.reader:
-        #    self.l_value = [row[1], row[2], row[3]]
-        # 学習リモコンの on/off の 値も読み込めるようにする
+        #    self.l_value = [row[1], row[2], row[3]]  # 学習リモコンの on/off の 値も読み込めるようにする
         #    self.dict.update({row[0]: self.l_value})
         #    print(self.dict)
 
-        self.ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=3)
+        self.ser = serial.Serial('/dev/ttyUSB0', 115200, timeout = 3)
         self._LED = pack('B', 0x69)  # LED 点灯
         self._RECEIVE = pack('B', 0x72)  # 受信
         self._TRANSMIT = pack('B', 0x74)  # 送信
@@ -74,11 +53,6 @@ class HomeServer:
         self.ch3 = pack('B', 0x33)  # B (黄)
         self.ch4 = pack('B', 0x34)  # B (黒)
         self.r_data = 0  # 受信する際の変数
-
-    async def load_init(self):
-        """論理式の構築、リクエストを生成"""
-        #print(self.service_dict)
-        self.logex = 'AAA'
 
     # csv
     def diction(self, value):
@@ -95,6 +69,7 @@ class HomeServer:
         print(self.ch1)
         print(self.dict[str(value)][2])
         self.transmit(self.dict[str(value)][2], self.ch1)
+
 
     def led(self):
         """LED を点灯させる"""
@@ -135,7 +110,8 @@ class HomeServer:
         print('self.ser.close()実行')
         self.ser.close()
 
-    # Streams: sending and receiving data without using callbacks
+
+    # 引数に対して、HTTP通信に必要な変数を当てはめる
     async def http_client(self, host, port, msg, loop):
         reader, writer = await asyncio.open_connection(
             host, port, loop=loop
@@ -151,7 +127,13 @@ class HomeServer:
         print('サービスを読み込み、条件の値を読み込む')
         with open('service.json', mode='r', encoding='utf-8') as f:
             data = json.load(f)
-
+            """
+            service_name
+            sensor_port
+            condition
+            appliance_port
+            appliance_power
+            """
             self.service.append(data['service_name'])
             self.smart_sensor_port = int(data['device_list'][0]['port'])
             self.smart_sensor_condition = int(data['device_list'][0]['condition'])
@@ -174,21 +156,12 @@ class HomeServer:
 
             await self.set_condition()
 
-    async def set_service_value(self):
-
-        await self.set_condition()
-
+    # self.sensor_conditionをセンサーへ送信する
     async def set_condition(self):
         print('センサーへ条件の登録を行います')
         host = '169.254.137.173'
         port = self.smart_sensor_port
-        # sensor_condition = self.smart_sensor
-        # print(self.service_dict)
-        matcon = match_context.MatchContext()
-        condition_dict = matcon.call_packed_condition(2)
-        sensor_condition = str(condition_dict)
-        sensor_condition = await replace_reserved_strings(sensor_condition)
-        print(sensor_condition)
+        sensor_condition = self.smart_sensor_condition
         msg = (
             f'GET /sensor/set_condition/{sensor_condition} HTTP/1.1\r\n'
             'Host: localhost:8010\r\n'
@@ -205,125 +178,22 @@ class HomeServer:
     # request内部の式'sensor_data'から受信データを取り出す
     async def get_sensor_data(self, request):
         get_data = request.match_info.get('sensor_data', "Anonymous")
-        get_data = await replace_previous_string(get_data)
-        get_data = ast.literal_eval(get_data)
-
-        # please make a field of enviroment
-        await self.store_enviroment_field(get_data)
-        await self.compare_enviroment_field_with_condition_equation()
-        # await self.check_service_condition()
+        print(get_data)
+        self.get_data = int(get_data)
+        await self.check_service_condition()
         return web.Response(text='ok')
-        # self.smart_sensor_condition == self.received_data
-        # or
-        # context_list.con:PrimitiveConditionEquation == device_list.current_enviroment
 
-    async def store_enviroment_field(self, get_data):
-        serial_number = get_data['SerialNumber']
-        function_name = get_data['FunctionName']
-        value = get_data['Value']
-        if self.enviroment_field.get(str(serial_number)) not in self.enviroment_field:
-            temp_dict = {function_name: value}
-            self.enviroment_field[serial_number] = temp_dict
-            print(self.enviroment_field)
-        elif self.enviroment_field[serial_number].get(function_name) not in self.enviroment_field:
-            self.enviroment_field[serial_number][function_name] = value
-            print(self.enviroment_field)
-
-    async def call_logical_expression(self):
-        matcon = match_context.MatchContext()
-        self.logical_expression = matcon.call_logical_expression()
-        self.logical_expression = ast.literal_eval(self.logical_expression)
-        print(self.logical_expression)
-
-    async def call_condition_equation(self):
-        matcon = match_context.MatchContext()
-        self.condition_equation = matcon.call_condition_equation()
-
-        print(self.condition_equation)
-
-    async def compare_enviroment_field_with_condition_equation(self):
-        await self.call_logical_expression()
-        await self.call_condition_equation()
-        check_list = await self.check_true_primitive_condition()
-        if await self.check_logical_expression_by_check_list(check_list):
-            print(check_list)
-            await self.service_execute()
-
-    async def service_execute(self):
-        print('Service activate...')
-
-    async def count_string_of_logical_expression(self):
-        logical_expression = self.logical_expression['ConditionEquation']
-        string_count = len(logical_expression) + 1
-        assert isinstance(string_count, int)
-        return string_count
-
-    async def check_logical_expression_by_check_list(self, check_list):
-        logical_expression = self.logical_expression['ConditionEquation']
-        for i in range(await self.count_string_of_logical_expression()):
-            if str(i) in str(logical_expression):
-                if check_list[i] == '1':
-                    logical_expression = logical_expression.replace(f'{str(i)}', '1')
-                elif check_list[i] == '0':
-                    logical_expression = logical_expression.replace(f'{str(i)}', '0')
-        print(logical_expression)
-        return eval(logical_expression)
-
-    async def check_true_primitive_condition(self):
-        check_list = [0] * (await self.count_string_of_logical_expression())
-        for id in range(await self.count_string_of_logical_expression()):
-            if await self.contained_id_primitive_condition(id):
-                if await self.check_true_primitive_condition_per_id(id):
-                    check_list[id] = '1'
-            else:
-                check_list[id] = '0'
-        print(f'check_list: {check_list}')
-        return check_list
-
-    async def contained_id_primitive_condition(self, id):
-        logical_expression = str(self.logical_expression)
-        if str(id) in logical_expression:
-            return True
-        else:
-            return False
-
-    async def check_true_primitive_condition_per_id(self, id):
-        primitive_condition_per_id = await self.get_primitive_condition_per_id(id)
-        serial_number = primitive_condition_per_id['SerialNumber']
-        function_name = primitive_condition_per_id['FunctionName']
-        enviroment_value = self.enviroment_field[serial_number][function_name]
-        expression = enviroment_value + primitive_condition_per_id['Value']
-        if eval(expression):
-            return True
-
-    async def get_primitive_condition_per_id(self, id):
-        condition_equation = self.condition_equation
-        primitive_condition_per_id = condition_equation['id' + f'{id}']
-        return primitive_condition_per_id
-
-    async def translate_condition_equation(self):
-        condition_equation = str(self.condition_equation['ConditionEquation'])
-        for i in range(len(condition_equation)):
-            condition_equation = condition_equation.replace(f'{i}', 'id' + f'{i}')
-        return condition_equation
-
-    async def get_enviroment_value(self):
-        serial_number = self.condition_equation['SerialNumber']
-        function_name = self.condition_equation['FunctionName']
-        enviroment_value = self.enviroment_field[serial_number][function_name]
-        return enviroment_value
-
-    """async def check_service_condition(self):
+    # self.smart_sensor_conditionとself.received_dataを比較する
+    async def check_service_condition(self):
         print('条件:' + str(self.smart_sensor_condition) + '<= データ:' + str(self.get_data))
         if self.smart_sensor_condition <= self.get_data:
             print(float(self.get_data))
             print('条件を満たしました、サービスを実行します')
             await self.appliance_power_switch()
         else:
-            print('条件を満たしていません')"""
+            print('条件を満たしていません')
 
-
-    # cronで一定時間ごとにサービスの条件を比較する、いらない気がしてきた
+    # cronで一定時間ごとにサービスの条件を比較する
     async def cron_check_service_condition(self, request):
         print('条件:' + str(self.smart_sensor_condition) + '<= データ:' + str(self.get_data))
         if self.smart_sensor_condition <= self.get_data:
@@ -345,7 +215,9 @@ class HomeServer:
             '\r\n'
             '\r\n'
         )
+
         self.diction(appliance_power)
+
         loop = asyncio.get_event_loop()
         await loop.create_task(self.http_client(host, port, msg, loop))
         # loop.run_until_complete(self.http_client(host, port, msg, loop)
@@ -364,17 +236,23 @@ class HomeServer:
         print('テストメッセージを送信します')
 
 
+    # msgと同名のメソッドへへルーティングする
     def main(self):
-        print('Starting Home Server ...')
+        logical_expression.logical().main()
+        print('Starting Home Server')
         app = web.Application()
+
+        # センサーと通信
         app.router.add_get('/server/get_sensor_data/{sensor_data}', self.get_sensor_data)
+        # サーバー内の操作
         app.router.add_get('/server/msg_test', self.msg_test)
         app.router.add_get('/server/load_service', self.load_service)
-        # app.router.add_get('/server/cron_check_service_condition', self.cron_check_service_condition)
-        # 学習リモコン初期化
+        app.router.add_get('/server/cron_check_service_condition', self.cron_check_service_condition)
+
+        # LEDを読み込む
         self.led()
-        # 学習リモコン受信
-        # self.receive()
+        self.receive()
+
         web.run_app(app, host='169.254.12.61', port=8010)
 
 

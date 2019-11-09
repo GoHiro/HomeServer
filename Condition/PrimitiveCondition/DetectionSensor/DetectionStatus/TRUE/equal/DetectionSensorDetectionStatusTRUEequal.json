@@ -1,0 +1,24 @@
+{
+  "?xml": {
+    "@version": "1.0",
+    "@encoding": "UTF-8"
+  },
+  "pc:PrimitiveCondition": {
+    "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    "@xmlns:pc": "http://www.example.org/HNS/Condition/PrimitiveCondition",
+    "@xsi:schemaLocation": "http://www.example.org/HNS/Condition/PrimitiveCondition ../../../../../../Schema/Condition/ PrimitiveConditionSchema.xsd",
+    "@uri": "http://localhost:8000/Condition/PrimitiveCondition/DetectionSensor/DetectionStatus/TRUE/equal",
+    "pc:ServiceName": "人感センサによる感知サービス",
+    "pc:Summary": "人感センサが感知したとき真となるサービス",
+    "pc:Device": {
+      "pc:DeviceName": "DetectionSensor"
+    },
+    "pc:Function": {
+      "pc:FunctionName": "DetectionStatus"
+    },
+    "pc:Value": {
+      "@type": "equal",
+      "#text": "TRUE"
+    }
+  }
+}
