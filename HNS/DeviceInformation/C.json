@@ -34,6 +34,66 @@
               }
             ]
           }
+        },
+        {
+          "dev:DeviceName": "ErectricFan",
+          "dev:SerialNumber": "Fan C",
+          "dev:InstalledDate": "2019-11-11T17:57:00",
+          "dev:Location": "502",
+          "dev:FunctionList": {
+            "dev:Function": [
+              {
+                "dev:FunctionName": "OperatingStatus",
+                "dev:AccessRule": "Get/Set",
+                "dev:Setting": {
+                  "@type": "string",
+                  "dev:ValueList": {
+                    "dev:Value": [
+                      "ON",
+                      "OFF"
+                    ]
+                  }
+                }
+              },
+              {
+                "dev:FunctionName": "OperatingMode",
+                "dev:AccessRule": "Get/Set",
+                "dev:Setting": {
+                  "@type": "string",
+                  "dev:ValueList": {
+                    "dev:Value": [
+                      "STABLE",
+                      "SWING"
+                    ]
+                  }
+                }
+              },
+              {
+                "dev:FunctionName": "TemperatureSettingValue",
+                "dev:AccessRule": "Get/Set",
+                "dev:Setting": {
+                  "@type": "numeric",
+                  "dev:Range": {
+                    "@scale": "1",
+                    "dev:UpperLimit": "0",
+                    "dev:LowerLomit": "37"
+                  }
+                }
+              },
+              {
+                "dev:FunctionName": "FanSpeed",
+                "dev:AccessRule": "Get/Set",
+                "dev:Setting": {
+                  "@type": "numeric",
+                  "dev:Range": {
+                    "@scale": "1",
+                    "dev:UpperLimit": "1",
+                    "dev:LowerLomit": "10"
+                  }
+                }
+              }
+            ]
+          }
         }
        ]
     }

@@ -5,10 +5,14 @@ import serial
 from struct import *
 from binascii import *
 import ast
-
-import logical_expression as logex
+import time
 import match_context
+# matcon = match_context.MatchContext()
 
+async def get_data_of_specified_key(target_data: object, key_to_target_data: object) -> object:
+    for key in key_to_target_data:
+        target_data = target_data[key]
+    return target_data
 
 async def replace_reserved_strings(res_str):
     reserved_to_unreserved = {'{': 'above_curly', ':': 'middle_colon',
@@ -16,7 +20,6 @@ async def replace_reserved_strings(res_str):
                               '@': 'attribute_at', '#': 'text_sharp', ' ': 'margin_space'}
     for reserved, unreserved in reserved_to_unreserved.items():
         res_str = res_str.replace(f'{reserved}', f'{unreserved}')
-
     return res_str
 
 async def replace_previous_string(res_str):
@@ -24,11 +27,86 @@ async def replace_previous_string(res_str):
     unreserved_to_previous_string = {'above_curly': '{', 'middle_colon': ':',
                                      'below_curly': '}', 'top_quote': "'", 'under_comma': ',',
                                      'attribute_at': '@', 'text_sharp': '#', 'margin_space': ' '}
-
     for unreserved, previous in unreserved_to_previous_string.items():
         res_str = res_str.replace(f'{unreserved}', f'{previous}')
-
     return res_str
+
+
+class OperatingDevice:
+    def __init__(self):
+        self.function_serial_dict = {'IRLightStatusON': 'ffff0000'}
+        # current_device_state will change that load from 'current_device_state.json'
+        self.current_device_state = {'Fan C':{'OperatingStatus': 'OFF',
+                                              'TemperatureSettingValue': '37',
+                                              'FanSpeed': '5'}}
+
+    async def call_service_behavior(self, service_id):
+        await self.get_device_name(service_id)
+
+    async def get_function_serial_of_current_serial_number(self, function_name):
+        checked_dict = self.function_serial_dict
+        serial_key = [self.serial_number_in_current_sequence, function_name]
+        serial_of_function = [checked_dict[key] for key in serial_key]
+        return serial_of_function
+
+    async def get_device_name(self, service_id):
+        matcon = match_context.MatchContext()
+        await matcon.set_current_user(service_id)
+        device_list = await get_data_of_specified_key(matcon.load_device_information(),
+                                                      matcon.key_to_device_list_in_device_information)
+        await self.get_function_list_per_device_sequence(device_list)
+
+    async def get_function_list_per_device_sequence(self, device_list):
+        for device_seq in device_list:
+            self.serial_number_in_current_sequence = device_seq['ns3:SerialNumber']
+            function_list = device_seq['ns3:FunctionList']
+            await self.get_function_per_function_sequence(function_list)
+
+    async def get_function_per_function_sequence(self, function_list):
+        for func_seq in function_list:
+            function_name = func_seq['ns3:FunctionName']
+            function_value = func_seq['ns3:Value']
+            matcon = match_context.MatchContext()
+            if function_value == await self.get_current_function_value(function_name):
+                continue
+            elif isinstance(function_value, str):
+                await self.call_strings_behavior(function_name)
+            elif isinstance(function_value, int):
+                await self.call_integer_behavior(function_value, function_name)
+
+    async def get_current_function_value(self, function_name):
+        key_to_current_function_value = [self.serial_number_in_current_sequence,
+                                         function_name]
+
+    async def call_strings_behavior(self, function_name):
+        set_serial = await self.get_function_serial_of_current_serial_number(function_name)
+        await IRControler.set_serial_of_function(set_serial)
+        await IRControler.send_serial_for_appliance()
+        await time.sleep(1)
+
+    async def call_integer_behavior(self, function_value, function_name):
+        set_serial = await self.get_function_serial_of_current_serial_number(function_name)
+        await IRControler.set_serial_of_function(set_serial)
+        matcon = match_context.MatchContext()
+        send_count = abs(await matcon.get_current_function_value() - function_value)
+        while True:
+            if send_count <= 0:
+                break
+            send_count -= 1
+            await IRControler.send_serial_for_appliance()
+            await time.sleep(1)
+
+
+class IRControler:
+    def __init__(self):
+        print('set IRControler stats')
+
+    async def send_serial_for_appliance(self):
+        print('set serial send to appliance')
+
+    async def set_serial_of_function(self, set_serial):
+        print('Set serial for sending appliance')
+
 
 class HomeServer:
     # サーバとセンサ、家電で同期している変数を保持する
@@ -65,7 +143,7 @@ class HomeServer:
         #    self.dict.update({row[0]: self.l_value})
         #    print(self.dict)
 
-        self.ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=3)
+        self.ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=5)
         self._LED = pack('B', 0x69)  # LED 点灯
         self._RECEIVE = pack('B', 0x72)  # 受信
         self._TRANSMIT = pack('B', 0x74)  # 送信
@@ -75,12 +153,6 @@ class HomeServer:
         self.ch4 = pack('B', 0x34)  # B (黒)
         self.r_data = 0  # 受信する際の変数
 
-    async def load_init(self):
-        """論理式の構築、リクエストを生成"""
-        #print(self.service_dict)
-        self.logex = 'AAA'
-
-    # csv
     def diction(self, value):
         # self.dict['value']を出力
         print(self.dict[str(value)])
@@ -182,8 +254,6 @@ class HomeServer:
         print('センサーへ条件の登録を行います')
         host = '169.254.137.173'
         port = self.smart_sensor_port
-        # sensor_condition = self.smart_sensor
-        # print(self.service_dict)
         matcon = match_context.MatchContext()
         condition_dict = matcon.call_packed_condition(2)
         sensor_condition = str(condition_dict)
@@ -247,10 +317,12 @@ class HomeServer:
         check_list = await self.check_true_primitive_condition()
         if await self.check_logical_expression_by_check_list(check_list):
             print(check_list)
-            await self.service_execute()
+            service_id = 2
+            await self.service_execute(service_id)
 
-    async def service_execute(self):
-        print('Service activate...')
+    async def service_execute(self, service_id):
+        print(f'Service {service_id} activate...')
+        await OperatingDevice.call_service_behavior(service_id)
 
     async def count_string_of_logical_expression(self):
         logical_expression = self.logical_expression['ConditionEquation']
@@ -321,7 +393,6 @@ class HomeServer:
             await self.appliance_power_switch()
         else:
             print('条件を満たしていません')"""
-
 
     # cronで一定時間ごとにサービスの条件を比較する、いらない気がしてきた
     async def cron_check_service_condition(self, request):

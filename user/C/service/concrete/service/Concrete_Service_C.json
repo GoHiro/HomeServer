@@ -58,29 +58,31 @@
                 "ns3:AbstractOperation": {
                   "@uri": "http://localhost:8000/Operation/AbstractOperation/00000001",
                   "ns3:DeviceList": {
-                    "ns3:Device": {
-                      "@seq": "1",
-                      "ns3:SerialNumber": "Aircon A",
-                      "ns3:FunctionList": {
-                        "ns3:Function": [
-                          {
-                            "@seq": "1",
-                            "ns3:FunctionName": "OperatingStatus",
-                            "ns3:Value": "ON"
-                          },
-                          {
-                            "@seq": "2",
-                            "ns3:FunctionName": "OperatingMode",
-                            "ns3:Value": "HEATING"
-                          },
-                          {
-                            "@seq": "3",
-                            "ns3:FunctionName": "TemperatureSettingValue",
-                            "ns3:Value": "20"
-                          }
-                        ]
+                    "ns3:Device": [
+                      {
+                        "@seq": "1",
+                        "ns3:SerialNumber": "Fan C",
+                        "ns3:FunctionList": {
+                          "ns3:Function": [
+                            {
+                              "@seq": "1",
+                              "ns3:FunctionName": "OperatingStatus",
+                              "ns3:Value": "ON"
+                            },
+                            {
+                              "@seq": "2",
+                              "ns3:FunctionName": "TemperatureSettingValue",
+                              "ns3:Value": "33"
+                            },
+                            {
+                              "@seq": "3",
+                              "ns3:FunctionName": "FanSpeed",
+                              "ns3:Value": "4"
+                            }
+                          ]
+                        }
                       }
-                    }
+                    ]
                   }
                 }
               }

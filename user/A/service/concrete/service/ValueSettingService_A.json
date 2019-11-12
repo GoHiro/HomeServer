@@ -1,0 +1,134 @@
+{
+  "?xml": {
+    "@version": "1.0",
+    "@encoding": "UTF-8",
+    "@standalone": "yes"
+  },
+  "ValueSettingService": {
+    "@xmlns:ns2": "http://www.example.org/HNS/Service/ValueSettingService/ValueSettingCondition",
+    "@xmlns": "http://www.example.org/HNS/Service/ValueSettingService/ValueSettingService",
+    "@xmlns:ns4": "http:// www.example.org/HNS/Service/ValueSettingService/ValueSettingAfterCondition",
+    "@xmlns:ns3": "http://www.example.org/ HNS/Service/ValueSettingService/ValueSettingOperation",
+    "AbstractService": {
+      "@uri": "http://localhost:8080/service/abstractservice/00000001"
+    },
+    "User": "A",
+    "ConditionOperationSetList": {
+      "ConditionOperationSet": {
+        "ns2:Condition": {
+          "ns2:ConditionEquationList": {
+            "ns2:ConditionEquation": "Asr"
+          },
+          "ns2:ContextGroupList": {
+            "ns2:ContextGroup": {
+              "@id": "Asr",
+              "ns2:ContextEquationList": {
+                "ns2:ContextEquation": "Asr"
+              },
+              "ns2:ContextList": {
+                "ns2:Context": {
+                  "@id": "Asr",
+                  "@uri": "http://localhost:8000/Condition/Context/00000001",
+                  "ns2:DeviceConditionEquationList": null,
+                  "ns2:DeviceTypeList": {
+                    "ns2:DeviceType": {
+                      "@uri": "http://localhost:8000/Condition/PrimitiveCondition/ DomesticAirConditioner/RoomTemperatureMeasurementValue/User/lower",
+                      "ns2:UseDeviceList": {
+                        "ns2:Device": {
+                          "@id": "iVK",
+                          "ns2:SerialNumber": "Aircon A",
+                          "ns2:Function": {
+                            "ns2:FunctionName": "RoomTemperatureMeasurementValue"
+                          },
+                          "ns2:Value": {
+                            "@type": "lower",
+                            "#text": "15"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "ns3:Operation": {
+          "ns3:AbstractOperationGroupList": {
+            "ns3:AbstractOperationGroup": {
+              "@id": "qwe",
+              "@seq": "1",
+              "ns3:AbstractOperationList": {
+                "ns3:AbstractOperation": {
+                  "@seq": "1",
+                  "@uri": "http://localhost:8000/Operation/AbstractOperation/00000001",
+                  "ns3:DeviceTypeList": {
+                    "ns3:DeviceType": {
+                      "@uri": "http://localhost:8000/Operation/DeviceProcedureOperation/00000001",
+                      "ns3:UseDeviceList": {
+                        "ns3:Device": {
+                          "@seq": "",
+                          "ns3:SerialNumber": "Aircon A",
+                          "ns3:FunctionList": {
+                            "ns3:Function": [
+                              {
+                                "@seq": "1",
+                                "ns3:FunctionName": "OperatingStatus",
+                                "ns3:Value": "ON"
+                              },
+                              {
+                                "@seq": "2",
+                                "ns3:FunctionName": "OperatingMode",
+                                "ns3:Value": "HEATING"
+                              },
+                              {
+                                "@seq": "3",
+                                "ns3:FunctionName": "TemperatureSettingValue",
+                                "ns3:Value": "20"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "ns4:AfterCondition": {
+          "@decition_time": "600",
+          "ns4:ConditionEquationList": {
+            "ns4:ConditionEquation": "1"
+          },
+          "ns4:ContextList": {
+            "ns4:Context": {
+              "@id": "1",
+              "@uri": "http://localhost:8000/Condition/Context/00000001",
+              "ns4:DeviceConditionEquationList": null,
+              "ns4:DeviceTypeList": {
+                "ns4:DeviceType": {
+                  "@uri": "http://localhost:8000/Condition/PrimitiveCondition/ DomesticAirConditioner/RoomTemperatureMeasurementValue/User/lower",
+                  "ns4:UseDeviceList": {
+                    "ns4:Device": {
+                      "@id": "ot0",
+                      "ns4:SerialNumber": "Aircon A",
+                      "ns4:Function": {
+                        "ns4:FunctionName": "RoomTemperatureMeasurementValue"
+                      },
+                      "ns4:Value": {
+                        "@type": "lower",
+                        "#text": "18"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
