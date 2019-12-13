@@ -1,0 +1,24 @@
+{
+  "?xml": {
+    "@version": "1.0",
+    "@encoding": "UTF-8"
+  },
+  "pc:PrimitiveCondition": {
+    "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    "@xmlns:pc": "http://www.example.org/HNS/Condition/PrimitiveCondition",
+    "@xsi:schemaLocation": "http://www.example.org/HNS/Condition/PrimitiveCondition ../../../../../../Schema/Condition/ PrimitiveConditionSchema.xsd",
+    "@uri": "http://localhost:8000/Condition/PrimitiveCondition/TemperatureSensor/TemperatureMeasurementValue/User/upper",
+    "pc:ServiceName": "温度センサによる温度測定サービス",
+    "pc:Summary": "温度センサがユーザ設定値を上回ったとき真となるサービス",
+    "pc:Device": {
+      "pc:DeviceName": "TemperatureSensor"
+    },
+    "pc:Function": {
+      "pc:FunctionName": "TemperatureMeasurementValue"
+    },
+    "pc:Value": {
+      "@type": "upper",
+      "#text": "user_define"
+    }
+  }
+}

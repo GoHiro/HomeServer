@@ -36,6 +36,28 @@
           }
         },
         {
+          "dev:DeviceName": "TemperatureSensor",
+          "dev:SerialNumber": "TempSensor C",
+          "dev:InstalledDate": "2019-10-23T17:48:00",
+          "dev:Location": "502",
+          "dev:FunctionList": {
+            "dev:Function": [
+              {
+                "dev:FunctionName": "TemperatureMeasurementValue",
+                "dev:AccessRule": "Get",
+                "dev:Setting": {
+                  "@type": "numeric",
+                  "dev:Range": {
+                    "@scale": "1",
+                    "dev:UpperLimit": "0",
+                    "dev:LowerLomit": "50"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
           "dev:DeviceName": "ErectricFan",
           "dev:SerialNumber": "Fan C",
           "dev:InstalledDate": "2019-11-11T17:57:00",

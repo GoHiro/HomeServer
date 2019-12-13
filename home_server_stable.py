@@ -150,7 +150,8 @@ class HomeServer:
             print(self.smart_appliance_mode)
 
             # 学習リモコンの on/off の 値を読み込む
-            self.l_value = [self.smart_appliance_name, self.smart_appliance_mode, self.smart_appliance_send_param]
+            self.l_value = [self.smart_appliance_name, self.smart_appliance_mode,
+                            self.smart_appliance_send_param]
             self.dict.update({self.smart_appliance_power: self.l_value})
             print('dict:' + str(self.dict))
 

@@ -44,10 +44,12 @@ def matched_data_from_the_key_above_and_below(target_data,
             break
         else:
             print('target_data not found')
+            matche_data = None
             # print(f'above_value: {list_value}')
             # print(f'target_data: {target_data}')
 
     return matched_data
+
 
 class MatchContext:
     def __init__(self):
@@ -69,12 +71,17 @@ class MatchContext:
         self.key_to_device_list_in_device_information = ['dev:DeviceInformation',
                                                          'dev:DeviceList',
                                                          'dev:Device']
-        self.key_to_list_of_primitive_condition = ['con:Context',
-                                                   'con:PrimitiveConditionList',
-                                                   'con:PrimitiveCondition']
+        self.key_to_primitive_condition_list = ['con:Context',
+                                                'con:PrimitiveConditionList',
+                                                'con:PrimitiveCondition']
         self.key_to_function_name_in_primitive_condition = ['pc:PrimitiveCondition',
                                                             'pc:Function',
                                                             'pc:FunctionName']
+        self.key_to_sequence_list_in_service = ['ConcreteService', 'ConditionOperationSetList',
+                                                'ConditionOperationSet', 'ns3:Operation',
+                                                'ns3:AbstractOperationGroupList', 'ns3:AbstractOperationGroup',
+                                                'ns3:AbstractOperationList', 'ns3:AbstractOperation',
+                                                'ns3:DeviceList', 'ns3:Device']
 
     def current_target_user(self):
         return self.target_user_list[self.current_user]
@@ -82,10 +89,14 @@ class MatchContext:
     def set_current_user(self, user_id):
         self.current_user = user_id
 
+    def set_current_service_name(self, service_name):
+        self.current_name = service_name
+
     def load_service_data(self):
         target_user = self.current_target_user()
+        target_name = self.current_name
         with open(self.path_to_cwd + '/' + f'user/{target_user}/service/concrete'
-                                           f'/service/Concrete_Service_{target_user}.json',
+                                           f'/service/{target_name}.json',
                   mode='r', encoding='utf-8') as service:
             service_data = json.load(service)
             return service_data
@@ -150,14 +161,12 @@ class MatchContext:
 
         return device_information
 
-    def get_serial_number_in_service(self):
+    def get_serial_number_in_service(self, dict_count):
         device_list = get_data_of_specified_key(self.load_service_data(),
                                                 self.key_to_device_list_in_service)
-        serial_number_in_service = device_list
-        serial_number_in_service = \
-            get_data_of_specified_key(serial_number_in_service,
-                                      self.key_to_serial_number_in_service)
-
+        serial_number_in_service = device_list["ns2:Device"][dict_count]["ns2:SerialNumber"]
+        pprint(device_list)
+        print(serial_number_in_service)
         return serial_number_in_service
 
     def get_function_name_in_service(self):
@@ -178,23 +187,31 @@ class MatchContext:
         context_data = self.load_context()
         list_of_primitive_condition = \
             get_data_of_specified_key(context_data,
-                                      self.key_to_list_of_primitive_condition)
+                                      self.key_to_primitive_condition_list)
 
         return list_of_primitive_condition
 
     def compare_device_name_with_device_name(self):
-        target_data = \
-            matched_data_from_the_key_above_and_below(self.get_serial_number_in_service(),
-                                                      self.load_device_information(),
-                                                      self.key_to_device_list_in_device_information,
-                                                      ['dev:SerialNumber'],
-                                                      ['dev:DeviceName'])
-        # print('single test')
+        # todo
+        while (True):
+            dict_count = 0
+            print(dict_count)
+            target_data = matched_data_from_the_key_above_and_below(self.get_serial_number_in_service(dict_count),
+                                                                    self.load_device_information(),
+                                                                    self.key_to_device_list_in_device_information,
+                                                                    ['dev:SerialNumber'],
+                                                                    ['dev:DeviceName'])
+            print(f'target_data: {target_data}')
+            if target_data is not None:
+                break
+            elif target_data is None:
+                dict_count += 1
         check_data = matched_data_from_the_key_above_and_below(target_data,
                                                                self.load_context(),
-                                                               self.key_to_list_of_primitive_condition,
+                                                               self.key_to_primitive_condition_list,
                                                                ['con:DeviceName', '#text'],
                                                                ['@uri'])
+        print(f'check_data: {check_data}')
         return check_data
 
     def primitive_condition_device_name(self):
@@ -212,91 +229,160 @@ class MatchContext:
         dict_of_primitive_condition = dict_of_primitive_condition['@uri']
         dict_of_primitive_condition = remove_localhost(dict_of_primitive_condition)
         print(f'path_to_primitive_condition: {dict_of_primitive_condition}')
-        # self.load_primitive_condition(self.path_to_cwd, dict_of_primitive_condition)
 
-    def load_primitive_condition(self):
-        path_to_primitive_condition: object = self.compare_device_name_with_device_name()
-        url = remove_localhost(path_to_primitive_condition)
-        file_name = remove_localhost(path_to_primitive_condition)
+    def format_file_name(self, file_name):
         file_name = file_name.split('/')
         file_name = file_name[3:]
         file_name = ''.join(file_name)
-        # print(file_name)
+        return file_name
+
+    def load_primitive_condition(self):
+        path_to_primitive_condition = self.compare_device_name_with_device_name()
+        url = remove_localhost(path_to_primitive_condition)
+        file_name = remove_localhost(path_to_primitive_condition)
+        file_name = self.format_file_name(file_name)
         with open(self.path_to_cwd + url + '/'
                   + file_name + '.json', mode='r',
                   encoding='utf-8') as primitive_condition:
             primitive_condition_data = json.load(primitive_condition)
-        # print(f'primitive_condition_data: {primitive_condition_data}')
         return primitive_condition_data
 
     def pack_primitive_condition(self, arg1, arg2):
         primitive_condition_data = self.load_primitive_condition()
         right = primitive_condition_data[arg1][arg2]
-        # print(right)
         primitive_condition_dict = f"'{arg2}'" + ': ' + str(right)
-        # print(primitive_condition_dict)
         return primitive_condition_dict
 
     def service_primitive_pack(self):
+        packed_condition_list = []
         primitive_condition_equation = str(self.dict_of_primitive_condition_equation())
         condition_value = get_data_of_specified_key(self.load_service_data(),
                                                     self.key_to_device_list_in_service)
-        value_list = str(condition_value['ns2:Device']['ns2:Value'])
-        serial_number = str(condition_value['ns2:Device']['ns2:SerialNumber'])
-        pack2 = self.pack_primitive_condition('pc:PrimitiveCondition', 'pc:Function')
-        pack3 = self.pack_primitive_condition('pc:PrimitiveCondition', 'pc:Value')
-        packed_dict = '{' + "'ns2:SerialNumber': "+ "'" + serial_number + "'" \
-                      + ', ' + pack2 + ', ' + pack3 \
-                      + ", 'ns2:Value': " + value_list + '}'
-        # print(packed_dict)
+        for condition in condition_value["ns2:Device"]:
+            packed_condition_list.append(self.insert_condition_value(condition))
+        return packed_condition_list
+
+    def insert_condition_value(self, condition):
+        value_list = str(condition['ns2:Value'])
+        serial_number = str(condition['ns2:SerialNumber'])
+        # fixme: find primitive_condition from serial_number
+        dev_device_name = self.find_device_name_by_serial_number(serial_number)
+        primitive_condition_uri = self.find_primitive_condition_uri_by_device_name(dev_device_name)
+        primitive_condition = self.load_primitive_condition_by_uri(primitive_condition_uri)
+        function_name = primitive_condition["pc:PrimitiveCondition"]["pc:Function"]["pc:FunctionName"]
+        pc_value = primitive_condition["pc:PrimitiveCondition"]["pc:Value"]
+        packed_dict = '{' + "'ns2:SerialNumber': " + "'" + serial_number + "'" + ', ' \
+                      + "'pc:FunctionName': " + "'" + str(function_name) + "'" + ', ' \
+                      + "'pc:Value': " + str(pc_value) + ',' \
+                      + "'ns2:Value': " + value_list + '}'
+        print('packed_dict')
+        print(packed_dict)
+        packed_dict = ast.literal_eval(packed_dict)
         return packed_dict
 
+    def load_primitive_condition_by_uri(self, primitive_condition_uri):
+        uri = remove_localhost(primitive_condition_uri)
+        file_name = remove_localhost(primitive_condition_uri)
+        file_name = self.format_file_name(file_name)
+        with open(self.path_to_cwd + uri + '/' + file_name + '.json',
+                  mode='r', encoding='utf-8') as pcon:
+            primitive_condition = json.load(pcon)
+        return primitive_condition
+
+    def find_device_name_by_serial_number(self, serial_number):
+        dev_device_list = self.get_dev_device_list()
+        for list in dev_device_list:
+            if list["dev:SerialNumber"] == serial_number:
+                dev_device_name = list["dev:DeviceName"]
+                break
+        return dev_device_name
+
+    def get_dev_device_list(self):
+        return get_data_of_specified_key(self.load_device_information(), self.key_to_device_list_in_device_information)
+
+    def find_primitive_condition_uri_by_device_name(self, device_name):
+        primitive_condition_list = get_data_of_specified_key(self.load_context(),
+                                                             self.key_to_primitive_condition_list)
+        for list in primitive_condition_list:
+            if list["con:DeviceName"]["#text"] == device_name:
+                primitive_condition_uri = list["con:DeviceName"]["@uri"]
+                break
+        return primitive_condition_uri
+
     def eval_id_primitive_dict(self):
-        conditional_equation_dict = self.service_primitive_pack()
-        # print(type(conditional_equation_dict))
-        eval_dict = ast.literal_eval(conditional_equation_dict)
+        eval_dict = self.service_primitive_pack()
         return eval_dict
 
     def join_packed_condition(self):
-        # condition_value = get_data_of_specified_key(self.load_service_data(),
-        #                                            self.key_to_device_list_in_service)
-        # condition_value = str(condition_value['ns2:Device']['ns2:Value'])
-        # print(device_id_in_service)
-        # print(condition_value)
         condition_dict = (self.eval_id_primitive_dict())
-        # print(condition_dict)
         condition_dict = str(condition_dict)
         join_data = '{' + "'" + 'packed_condition' + "'" + ': ' + condition_dict + '}'
-        # print(join_data)
         join_data = ast.literal_eval(join_data)
-        # pprint(type(join_data))
         print('matched condiiton is ...')
         return join_data
 
-    def call_logical_expression(self):
-        self.set_current_user(2)
+    def call_logical_expression(self, service_id, service_name):
+        self.set_current_user(service_id)
+        self.set_current_service_name(service_name)
         logical_expression = "{" "'ConditionEquation': " + f"'{self.simple_condition_equation()}'" + "}"
         return logical_expression
 
-    def call_condition_equation(self):
-        self.set_current_user(2)
-        concrete_condition_equation = self.search_matched_device_name_with_serial()
+    def call_condition_equation(self, service_id, service_name):
+        """{"id1": {primitive_condition1},
+            "id2": {primitive_condition2}, ...}"""
+        self.set_current_user(service_id)
+        self.set_current_service_name(service_name)
+        concrete_condition_equation = {}
+        # concrete_condition_equation = self.search_matched_device_name_with_serial()
+        condition_value = get_data_of_specified_key(self.load_service_data(), self.key_to_device_list_in_service)
+        for condition in condition_value["ns2:Device"]:
+            del condition['@id']
+            serial_number = condition['ns2:SerialNumber']
+            device_name = self.find_device_name_from_serial_number(serial_number)
+            primitive_condition_id = self.find_primitive_condition_id_from_device_name(device_name)
+            # fixme: condition -> translated_condition
+            translated_condition = self.condition_contain_translated_value(serial_number,function_name=condition['ns2:Function']['ns2:FunctionName'],value_dict=condition['ns2:Value'])
+            part_of_concrete_condition_equation = {primitive_condition_id: translated_condition}
+            concrete_condition_equation.update(part_of_concrete_condition_equation)
+        print('concrete_condition_equation')
+        print(concrete_condition_equation)
         return concrete_condition_equation
 
+    def condition_contain_translated_value(self, serial_number, function_name, value_dict):
+        translated_value = self.translate_to_value(value_dict)
+        condition_frame = {'SerialNumber': serial_number,'FunctionName': function_name, 'Value': translated_value}
+        return condition_frame
+
+    def find_device_name_from_serial_number(self, serial_number):
+        device_list = self.get_device_list()
+        print(device_list)
+        for device in device_list:
+            if device['dev:SerialNumber'] == serial_number:
+                name = device['dev:DeviceName']
+        print(name)
+        return name
+
+    def find_primitive_condition_id_from_device_name(self, device_name):
+        primitive_condition_list = get_data_of_specified_key(self.load_context(), self.key_to_primitive_condition_list)
+        id = [primitive_condition['@id'] for primitive_condition in primitive_condition_list if
+              primitive_condition['con:DeviceName']['#text'] == device_name]
+        print(id)
+        return id[0]
+
     def get_serial_number(self):
-        serial_number = get_data_of_specified_key(self.load_service_data(),
-                                                      self.key_to_serial_number_in_service)
+        serial_number = get_data_of_specified_key(self.load_service_data(),self.key_to_serial_number_in_service)
         return serial_number
 
     def get_device_list(self):
-        device_list = get_data_of_specified_key(self.load_device_information(),
-                                                self.key_to_device_list_in_device_information)
+        device_list = get_data_of_specified_key(self.load_device_information(),self.key_to_device_list_in_device_information)
         return device_list
 
     def search_matched_device_name_with_serial(self):
+        # fixme: cant use ,need fix
         condition_equationdict = {}
-        use_serial_number = self.get_serial_number_in_service()
         device_list = self.get_device_list()
+        use_serial_number = self.get_serial_number_in_service()
+
         for device in device_list:
             if device['dev:SerialNumber'] == use_serial_number:
                 device_name = device['dev:DeviceName']
@@ -305,7 +391,7 @@ class MatchContext:
 
     def search_id_of_primitive_condition(self, device_name):
         primitive_condition_list = get_data_of_specified_key(self.load_context(),
-                                                             self.key_to_list_of_primitive_condition)
+                                                             self.key_to_primitive_condition_list)
         for primitive_condition in primitive_condition_list:
             if primitive_condition['con:DeviceName']['#text'] == device_name:
                 primitive_condition_id = primitive_condition['@id']
@@ -323,8 +409,8 @@ class MatchContext:
         value = self.translate_to_value(concrete_value['ns2:Device']['ns2:Value'])
         serial_number = str(concrete_value['ns2:Device']['ns2:SerialNumber'])
         part_of_condition_equation = "{'SerialNumber': " + f"'{serial_number}'," \
-                                   + "'FunctionName': "  + f"'{self.find_function_name()}'," \
-                                   + "'Value': "         + f"'{value}'" + "}"
+                                     + "'FunctionName': " + f"'{self.find_function_name()}'," \
+                                     + "'Value': " + f"'{value}'" + "}"
         return part_of_condition_equation
 
     def translate_to_value(self, value_dict):
@@ -361,16 +447,31 @@ class MatchContext:
                                                   self.key_to_function_name_in_primitive_condition)
         return function_name
 
-    def call_packed_condition(self, num):
-        self.set_current_user(num)
+    def call_packed_condition(self, service_id, service_name):
+        self.set_current_user(service_id)
+        self.set_current_service_name(service_name)
         return self.join_packed_condition()
 
+    def call_sequence_list(self, service_id, service_name):
+        self.set_current_user(service_id)
+        self.set_current_service_name(service_name)
+        sequence_of_behavior = get_data_of_specified_key(self.load_service_data(),
+                                                         self.key_to_sequence_list_in_service)
+        print(sequence_of_behavior)
+        return sequence_of_behavior
+
+    def call_device_name_pared_serial_number(self, service_id, current_serial_number):
+        self.set_current_user(service_id)
+        device_list = get_data_of_specified_key(self.load_device_information(),
+                                                self.key_to_device_list_in_device_information)
+        for device in device_list:
+            if device['dev:SerialNumber'] == current_serial_number:
+                return device['dev:DeviceName']
+
     def main(self):
-        # User(A-C:0~2)
+        self.set_current_user(2)  # User_list(A-C:0~2)
         print(self.call_logical_expression())
         print(self.call_condition_equation())
-        # print(self.primitive_condition_equation())
-        # print(self.join_packed_condition())
 
 
 if __name__ == '__main__':

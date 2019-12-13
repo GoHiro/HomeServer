@@ -2,6 +2,14 @@ import asyncio
 
 
 class ServerController:
+    def __init__(self):
+        self.sequence_list = [{'@seq': '1', 'ns3:SerialNumber': 'Fan C', 'ns3:FunctionList':
+            {'ns3:Function': [
+                {'@seq': '1', 'ns3:FunctionName': 'OperatingStatus', 'ns3:Value': 'ON'},
+                {'@seq': '2', 'ns3:FunctionName': 'TemperatureSettingValue', 'ns3:Value': '33'},
+                {'@seq': '3', 'ns3:FunctionName': 'FanSpeed', 'ns3:Value': '4'}]}}]
+
+
     async def http_client(self, host, port, msg, loop):
         reader, writer = await asyncio.open_connection(
             host, port, loop=loop
