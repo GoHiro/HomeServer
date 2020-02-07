@@ -5,24 +5,25 @@
         "@standalone": "yes"
     },
     "ConcreteService": {
-        "@uri": "/user/C/service/concrete/service/Concrete_Service_C_3",
+        "@uri": "/user/C/service/concrete/service/Concrete_Service_C_8",
         "@xmlns:ns2": "http://www.example.org/HNS/Service/ConcreteService/ConcreteCondition ",
         "@xmlns": "http://www.example.org/HNS/Service/ConcreteService/ConcreteService ",
         "@xmlns:ns4": "http://www.example.org/HNS/Service/ConcreteService/ConcreteAfterCondition ",
         "@xmlns:ns3": "http://www.example.org/HNS/Service/ConcreteService/ConcreteOperation",
         "CreatedDate": "2019-10-23T16:21:27.237+09:00",
-        "Summary": "Less heating room when there are human and room is enough hot",
+        "Summary": "Heating room when there are human and room is cold",
         "AbstractServiceReference": {
             "@uri": "http://localhost:8080/service/abstractservice/00000001"
         },
         "User": "C",
-        "Name": "Concrete_Service_C_3",
+        "Name": "Concrete_Service_C_8",
+        "Purpose": "Heating",
         "Priority": "1",
         "ConditionOperationSetList": {
             "ConditionOperationSet": {
                 "ns2:Condition": {
                     "ns2:ConditionEquationList": {
-                        "ns2:ConditionEquation": "Lhe"
+                        "ns2:ConditionEquation": "Hut"
                     },
                     "ns2:TimeCondition": {
                         "@id": "TLE",
@@ -35,14 +36,14 @@
                     },
                     "ns2:ContextGroupList": {
                         "ns2:ContextGroup": {
-                            "@id": "Lhe",
+                            "@id": "Hut",
                             "ns2:ContextEquationList": {
-                                "ns2:ContextEquation": "Lhe"
+                                "ns2:ContextEquation": "Hut"
                             },
                             "ns2:ContextList": {
                                 "ns2:Context": {
-                                    "@id": "Lhe",
-                                    "@uri": "http://localhost:8000/Condition/Context/00000004",
+                                    "@id": "Hut",
+                                    "@uri": "http://localhost:8000/Condition/Context/00000003",
                                     "ns2:DeviceList": {
                                         "ns2:Device": [
                                             {
@@ -63,8 +64,8 @@
                                                     "ns2:FunctionName": "TemperatureMeasurementValue"
                                                 },
                                                 "ns2:Value": {
-                                                    "@type": "upper",
-                                                    "#text": "18"
+                                                    "@type": "lower",
+                                                    "#text": "9"
                                                 }
                                             }
                                         ]
@@ -81,6 +82,8 @@
                             "ns3:AbstractOperationList": {
                                 "ns3:AbstractOperation": {
                                     "@uri": "http://localhost:8000/Operation/AbstractOperation/00000001",
+                                    "purpose": "Heating",
+                                    "priority": "1",
                                     "ns3:DeviceList": {
                                         "ns3:Device": [
                                             {
@@ -96,25 +99,12 @@
                                                         {
                                                             "@seq": "2",
                                                             "ns3:FunctionName": "TemperatureSettingValue",
-                                                            "ns3:Value": "25"
+                                                            "ns3:Value": "24"
                                                         },
                                                         {
                                                             "@seq": "3",
                                                             "ns3:FunctionName": "FanSpeed",
-                                                            "ns3:Value": "2"
-                                                        }
-                                                    ]
-                                                }
-                                            },
-                                            {
-                                                "@seq": "2",
-                                                "ns3:SerialNumber": "Light C",
-                                                "ns3:FunctionList": {
-                                                    "ns3:Function": [
-                                                        {
-                                                            "@seq": "1",
-                                                            "ns3:FunctionName": "OperatingStatus",
-                                                            "ns3:Value": "OFF"
+                                                            "ns3:Value": "4"
                                                         }
                                                     ]
                                                 }

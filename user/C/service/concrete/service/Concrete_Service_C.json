@@ -17,11 +17,21 @@
     },
     "User": "C",
     "Name": "Concrete_Service_C",
+    "Priority": "1",
     "ConditionOperationSetList": {
       "ConditionOperationSet": {
         "ns2:Condition": {
           "ns2:ConditionEquationList": {
             "ns2:ConditionEquation": "Caa"
+          },
+          "ns2:TimeCondition": {
+              "@id": "TLE",
+              "ns2:SerialNumber": "Time",
+              "ns2:FunctionName": "TimeMonitoring",
+              "ns2:Value": {
+                  "@type": "duration",
+                  "start": "0700",
+                  "end": "2300"}
           },
           "ns2:ContextGroupList": {
             "ns2:ContextGroup": {
@@ -34,7 +44,7 @@
                   "@id": "Caa",
                   "@uri": "http://localhost:8000/Condition/Context/00000002",
                   "ns2:DeviceList": {
-                    "ns2:Device": {
+                    "ns2:Device": [{
                       "@id": "iLN",
                       "ns2:SerialNumber": "IRSensor C",
                       "ns2:Function": {
@@ -44,7 +54,7 @@
                         "@type": "equal",
                         "#text": "TRUE"
                       }
-                    }
+                    }]
                   },
                   "ns2:DeviceConditionEquationList": null
                 }

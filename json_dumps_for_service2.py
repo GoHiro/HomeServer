@@ -5,12 +5,12 @@ import os
 class ServiceStruct:
     def __init__(self):
         """Concrete Service dump from template"""
-        self.service_name = "Concrete_Service_C_3"
-        self.summary = "Less heating room when there are human and room is enough hot"
+        self.service_name = "Concrete_Service_C_4"
+        self.summary = "Light ON when human in the room"
         self.user_name = "C"
-        self.condition_id = "Lhe"
-        self.context_uri = "http://localhost:8000/Condition/Context/00000004"
-
+        self.condition_id = "Loh"
+        self.context_uri = "http://localhost:8000/Condition/Context/00000005"
+        self.priority = "1"
 
         self.service = \
             {
@@ -32,6 +32,7 @@ class ServiceStruct:
                     },
                     "User": f"{self.user_name}",
                     "Name": f"{self.service_name}",
+                    "Priority": f"{self.priority}",
                     "ConditionOperationSetList": {
                         "ConditionOperationSet": {
                             "ns2:Condition": {

@@ -318,7 +318,7 @@ class MatchContext:
         condition_dict = str(condition_dict)
         join_data = '{' + "'" + 'packed_condition' + "'" + ': ' + condition_dict + '}'
         join_data = ast.literal_eval(join_data)
-        print('matched condiiton is ...')
+        print('matched condiitons to register ...')
         return join_data
 
     def call_logical_expression(self, service_id, service_name):
@@ -467,6 +467,60 @@ class MatchContext:
         for device in device_list:
             if device['dev:SerialNumber'] == current_serial_number:
                 return device['dev:DeviceName']
+
+    def call_priority_list(self, service_id, target_service_name_list):
+        priority_list = []
+        key_to_priority = ['ConcreteService', 'Priority']
+        self.set_current_user(service_id)
+        for service_name in target_service_name_list:
+            self.set_current_service_name(service_name)
+            priority_list.append(int(get_data_of_specified_key(self.load_service_data(),
+                                                           key_to_priority)))
+        return priority_list
+
+    def call_time_condition_list(self, service_id, service_name):
+        self.set_current_user(service_id)
+        self.set_current_service_name(service_name)
+        key_to_time_condition = ['ConcreteService', 'ConditionOperationSetList',
+                                 'ConditionOperationSet', 'ns2:Condition', 'ns2:TimeCondition', 'ns2:Value']
+        time_condition = get_data_of_specified_key(self.load_service_data(),
+                                                   key_to_time_condition)
+        return time_condition
+
+    def call_check_service_has_after_condition(self,service_id, service_name):
+        self.set_current_user(service_id)
+        self.set_current_service_name(service_name)
+        key_to_after_condition = ['ConcreteService', 'ConditionOperationSetList',
+                                  'ConditionOperationSet']
+        after_condition = get_data_of_specified_key(self.load_service_data(),
+                                                    key_to_after_condition)
+        if after_condition.get('ns4:AfterCondition'):
+            return True
+        else:
+            return False
+
+    def call_load_after_condition(self,service_id, service_name):
+        self.set_current_user(service_id)
+        self.set_current_service_name(service_name)
+        key_to_after_condition = ['ConcreteService', 'ConditionOperationSetList',
+                                 'ConditionOperationSet', 'ns4:AfterCondition']
+        after_condition = get_data_of_specified_key(self.load_service_data(),
+                                                    key_to_after_condition)
+        after_condition['ServiceName'] = service_name
+        return after_condition
+
+    def call_device_information_with_id(self, service_id):
+        self.set_current_user(service_id)
+        device_information = self.load_device_information()
+        return device_information
+
+    def call_purpose_and_priority(self, service_id, service_name):
+        self.set_current_user(service_id)
+        self.set_current_service_name(service_name)
+        key_to_purpose_priority = ['ConcreteService']
+        purpose_and_priority_dict = get_data_of_specified_key(self.load_service_data(),
+                                                              key_to_purpose_priority)
+        return purpose_and_priority_dict
 
     def main(self):
         self.set_current_user(2)  # User_list(A-C:0~2)

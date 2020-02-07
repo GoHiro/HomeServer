@@ -1,4 +1,5 @@
-{
+[
+  {
           "dev:DeviceName": "ErectricFan",
           "dev:SerialNumber": "Fan C",
           "dev:InstalledDate": "2019-11-11T17:57:00",
@@ -57,4 +58,28 @@
               }
             ]
           }
+        },
+  {
+          "dev:DeviceName": "IRLight",
+          "dev:SerialNumber": "Light C",
+          "dev:InstalledDate": "2019-11-11T17:57:00",
+          "dev:Location": "502",
+          "dev:FunctionList": {
+            "dev:Function": [
+              {
+                "dev:FunctionName": "OperatingStatus",
+                "dev:AccessRule": "Get/Set",
+                "dev:Setting": {
+                  "@type": "string",
+                  "dev:ValueList": {
+                    "dev:Value": [
+                      "ON",
+                      "OFF"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
         }
+]

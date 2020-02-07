@@ -1,0 +1,28 @@
+{
+  "?xml": {
+    "@version": "1.0",
+    "@encoding": "UTF-8"
+  },
+  "con:Context": {
+    "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    "@xmlns:con": "http://www.example.org/HNS/Condition/Context",
+    "@xsi:schemaLocation": "http://www.example.org/HNS/Condition/Context ../../../Schema/Condition/ContextSchema.xsd",
+    "@uri": "http://localhost:8000/Condition/Context/00000005",
+    "con:ServiceName": "人不在感知サービス",
+    "con:Summary": "人がいないときに真となるサービス",
+    "con:PrimitiveConditionEquationList": {
+      "con:PrimitiveConditionEquation": "1"
+    },
+    "con:PrimitiveConditionList": {
+      "con:PrimitiveCondition": [
+        {
+        "@id": "1",
+        "con:DeviceName": {
+          "@uri": "http://localhost:8000/Condition/PrimitiveCondition/DetectionSensor/DetectionStatus/FALSE/equal",
+          "#text": "DetectionSensor"
+        }
+      }
+      ]
+    }
+  }
+}

@@ -36,26 +36,7 @@ class ServerController:
         loop.close()
 
 
-    """
-    def msg_test(self):
-        print('test')
-        host = '127.0.0.1'
-        port = 8010
-        buff1 = "tv_on"
-        msg = (
-            f'GET /event_broadcast/{buff1} HTTP/1.1\r\n'
-            'Host: localhost:8010\r\n'
-            '\r\n'
-            '\r\n'
-        )
-
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.http_client(host, port, msg, loop))
-        loop.close()
-    """
-
     def main(self):
-        #self.msg_test()
         self.load_service()
 
 
